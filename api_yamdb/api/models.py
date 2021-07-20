@@ -81,7 +81,7 @@ class Review(models.Model):
     )
     text = models.TextField()
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews'
+        CustomUser, on_delete=models.CASCADE, related_name='reviews'
     )
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -100,7 +100,7 @@ class Comment(models.Model):
     )
     text = models.TextField()
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='comments'
+        CustomUser, on_delete=models.CASCADE, related_name='comments'
     )
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True

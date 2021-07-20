@@ -5,7 +5,16 @@ from .models import CustomUser, Review, Comment
 from .models import Category, Title, Genre
 
 
+class EmailSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+    
+    class Meta:
+        fields = ['email']
+        model = CustomUser
+
+
 class UserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         fields = ['first_name', 'last_name', 'username', 'bio',
                   'email', 'role']

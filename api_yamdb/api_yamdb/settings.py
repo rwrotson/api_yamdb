@@ -132,12 +132,12 @@ AUTH_USER_MODEL= 'api.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.AllowAny', 
     ],
 
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
+    #'DEFAULT_AUTHENTICATION_CLASSES': [
+     #   'rest_framework_simplejwt.authentication.JWTAuthentication',
+#    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
@@ -147,8 +147,8 @@ REST_FRAMEWORK = {
 }
 
 
-SIMPLE_JWT = {
+#SIMPLE_JWT = {
     # Устанавливаем срок жизни токена
-   'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-   'AUTH_HEADER_TYPES': ('Bearer',),
-}
+   #'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+ #  'AUTH_HEADER_TYPES': ('Bearer',),
+#}

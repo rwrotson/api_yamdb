@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import SearchFilter
@@ -8,10 +8,19 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 
 from apps.account.permissions import IsAdminPermission, ReadOnlyPermission
 from .filters import TitleFilterBackend
-from .models import CustomUser, Review, Title
-from .models import Category, Genre, Title
-from .serializers import UserSerializer, ReviewSerializer, CommentSerializer
-from .serializers import CategorySerializer, TitleSerializer, GenreSerializer, TitleCreateSerializer
+from .models import CustomUser, Review, Title, Category, Genre
+from .serializers import (UserSerializer, ReviewSerializer, 
+                          CommentSerializer, EmailSerializer,
+                          CategorySerializer, TitleSerializer, 
+                          GenreSerializer, TitleCreateSerializer)
+
+
+@api_view(['POST'])
+def auth_user(request):
+    serializer = EmailSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.data.get('email')
+    username = email.rsplit('@')
 
 
 class UserViewSet(viewsets.ModelViewSet):

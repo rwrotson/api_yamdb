@@ -10,7 +10,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('title_id', 'text', 'author', 'score', 'pub_date')
+    list_display = ('text', 'author', 'score', 'pub_date') #title_id
     empty_value_display = '-пусто-'
 
 

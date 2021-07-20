@@ -1,26 +1,18 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, DestroyAPIView
 
-from apps.account.permissions import IsAdminPermission, ReadOnlyPermission
+#from .permissions import IsAdminPermission, ReadOnlyPermission
 from .filters import TitleFilterBackend
-from .models import CustomUser, Review, Title, Category, Genre
-from .serializers import (UserSerializer, ReviewSerializer, 
-                          CommentSerializer, EmailSerializer,
-                          CategorySerializer, TitleSerializer, 
-                          GenreSerializer, TitleCreateSerializer)
-
-
-@api_view(['POST'])
-def auth_user(request):
-    serializer = EmailSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    email = serializer.data.get('email')
-    username = email.rsplit('@')
+from .models import CustomUser, Review, Comment
+from .models import Category, Genre, Title
+from .serializers import UserSerializer, ReviewSerializer, ReviewCreateSerializer 
+from .serializers import CommentSerializer, CommentCreateSerializer
+from .serializers import CategorySerializer, TitleSerializer, GenreSerializer, TitleCreateSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -38,14 +30,14 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(methods=['PATCH'], detail=False, url_path='me', url_name='me')
     def profile_patch(self, request):
         serializer = self.get_serializer(request.user, data=request.data,
-                                        partial=True)
+                                         partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save(role=request.user.role, partial=True)
         return Response(serializer.data)
 
 
 class CommonListAPIView(ListCreateAPIView):
-    permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
     filter_backends = [SearchFilter]
     search_fields = ('name',)
 
@@ -56,7 +48,7 @@ class CategoriesListAPIView(CommonListAPIView):
 
 
 class CategoriesDetailAPIView(DestroyAPIView):
-    permission_classes = [IsAdminPermission]
+    #permission_classes = [IsAdminPermission]
 
     def get_object(self):
         return get_object_or_404(Category, slug=self.kwargs['slug'])
@@ -68,14 +60,14 @@ class GenreListAPIView(CommonListAPIView):
 
 
 class GenreDetailAPIView(DestroyAPIView):
-    permission_classes = [IsAdminPermission]
+    #permission_classes = [IsAdminPermission]
 
     def get_object(self):
         return get_object_or_404(Genre, slug=self.kwargs['slug'])
 
 
 class TitleListAPIView(ListCreateAPIView):
-    permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
     queryset = Title.objects.all()
     filter_backends = [TitleFilterBackend]
 
@@ -84,48 +76,42 @@ class TitleListAPIView(ListCreateAPIView):
 
 
 class TitleDetailAPIView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
     queryset = Title.objects.all()
 
     def get_serializer_class(self):
         return TitleCreateSerializer if self.request.method in ['PATCH', 'PUT'] else TitleSerializer
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    serializer_class = ReviewSerializer
-    pagination_class = PageNumberPagination
+class ReviewListAPIView(ListCreateAPIView):
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    queryset = Review.objects.all()
+    #pagination_class = PageNumberPagination
 
-    def get_queryset(self):
-        title = get_object_or_404(
-            Title, id=self.kwargs.get('title_id')
-        )
-        return title.reviews
-
-    def perform_create(self, serializer):
-        title = get_object_or_404(
-            Title, id=self.kwargs.get('title_id')
-        )
-        serializer.save(
-            author=self.request.user, title=title
-        )
+    def get_serializer_class(self):
+        return ReviewCreateSerializer if self.request.method == 'POST' else ReviewSerializer
 
 
-class CommentViewSet(viewsets.ModelViewSet):
-    serializer_class = CommentSerializer
-    pagination_class = PageNumberPagination
+class ReviewDetailAPIView(RetrieveUpdateDestroyAPIView):
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    queryset = Review.objects.all()
 
-    def get_queryset(self):
-        review = get_object_or_404(
-            Review, title_id=self.kwargs.get('title_id'),
-            review_id=self.kwargs.get('review_id')
-        )
-        return review.comments
+    def get_serializer_class(self):
+        return ReviewCreateSerializer if self.request.method in ['PATCH', 'PUT'] else ReviewSerializer
 
-    def perform_create(self, serializer):
-        review = get_object_or_404(
-            Review, title_id=self.kwargs.get('title_id'),
-            review_id=self.kwargs.get('review_id')
-        )
-        serializer.save(
-            author=self.request.user, review_id=review
-        )
+
+class CommentListAPIView(ListCreateAPIView):
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    queryset = Comment.objects.all()
+    #pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        return CommentCreateSerializer if self.request.method == 'POST' else CommentSerializer
+
+
+class CommentDetailAPIView(RetrieveUpdateDestroyAPIView):
+    #permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    queryset = Comment.objects.all()
+
+    def get_serializer_class(self):
+        return ReviewCreateSerializer if self.request.method in ['PATCH', 'PUT'] else CommentSerializer

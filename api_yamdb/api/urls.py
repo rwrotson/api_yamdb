@@ -5,7 +5,6 @@ from .views import UserViewSet, ReviewViewSet, CommentViewSet
 
 
 router = DefaultRouter()
-router = SimpleRouter()
 
 router.register('users', UserViewSet, basename='user')
 router.register(

@@ -1,11 +1,20 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
-from .models import CustomUser, Review, Title
-from .serializers import UserSerializer, ReviewSerializer, CommentSerializer
+from .models import CustomUser, Review #,Title
+from .serializers import (UserSerializer, ReviewSerializer, 
+                          CommentSerializer, EmailSerializer)
+
+
+@api_view(['POST'])
+def auth_user(request):
+    serializer = EmailSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.data.get('email')
+    username = email.rsplit('@')
 
 
 class UserViewSet(viewsets.ModelViewSet):

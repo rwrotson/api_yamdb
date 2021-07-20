@@ -4,7 +4,16 @@ from rest_framework.exceptions import ValidationError
 from .models import CustomUser, Review, Comment
 
 
+class EmailSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+    
+    class Meta:
+        fields = ['email']
+        model = CustomUser
+
+
 class UserSerializer(serializers.ModelSerializer):
+    
     class Meta:
         fields = ['first_name', 'last_name', 'username', 'bio',
                   'email', 'role']

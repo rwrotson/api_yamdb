@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
-from .views import UserViewSet, ReviewViewSet, CommentViewSet
+from .views import UserViewSet, ReviewViewSet, CommentViewSet, auth_user
 
 
 router = DefaultRouter()
@@ -17,5 +17,6 @@ router.register(
 )
 
 urlpatterns = [
-    path('v1/', include(router.urls))
+    path('v1/', include(router.urls)),
+    path('v1/auth/email/', auth_user),
 ]

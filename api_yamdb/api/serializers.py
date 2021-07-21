@@ -72,7 +72,8 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
+    review = serializers.HiddenField(default=1)
 
     class Meta:
-        fields = ('id', 'text', 'author', 'pub_date')
+        fields = ('id', 'review', 'text', 'author', 'pub_date')
         model = Comment

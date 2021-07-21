@@ -91,7 +91,8 @@ class ReviewListAPIView(ListCreateAPIView):
         return Review.objects.filter(title=self.kwargs.get('pk'))
 
     def perform_create(self, serializer):
-        serializer.save(title=self.kwargs.get('pk'), author=self.request.user['id'])
+        title = Title.objects.get(id=self.kwargs.get('pk'))
+        serializer.save(title=title, author=self.request.user)
 
 
 class ReviewDetailAPIView(RetrieveUpdateDestroyAPIView):
@@ -111,7 +112,8 @@ class CommentListAPIView(ListCreateAPIView):
         return Comment.objects.filter(review=self.kwargs.get('rpk'))
 
     def perform_create(self, serializer):
-        serializer.save(title=self.kwargs.get('pk'), review=self.kwargs.get('rpk'), author=self.request.user['id'])
+        review = Review.objects.get(id=self.kwargs.get('rpk'))
+        serializer.save(review=review, author=self.request.user)
 
 
 class CommentDetailAPIView(RetrieveUpdateDestroyAPIView):

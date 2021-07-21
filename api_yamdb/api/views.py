@@ -13,7 +13,6 @@ from .serializers import (UserSerializer, ReviewSerializer,
                           CommentSerializer, EmailSerializer,
                           CategorySerializer, TitleSerializer, 
                           GenreSerializer, TitleCreateSerializer)
-ffff
 
 @api_view(['POST'])
 def auth_user(request):

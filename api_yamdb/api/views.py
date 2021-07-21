@@ -10,11 +10,19 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 
 #from .permissions import IsAdminPermission, ReadOnlyPermission
 from .filters import TitleFilterBackend
-from .models import CustomUser, Review, Comment
-from .models import Category, Genre, Title
-from .serializers import UserSerializer, ReviewSerializer 
-from .serializers import CommentSerializer
-from .serializers import CategorySerializer, TitleSerializer, GenreSerializer, TitleCreateSerializer
+from .models import (CustomUser, Review, Title, Category, Genre,
+                     Category, Comment)
+from .serializers import (UserSerializer, ReviewSerializer, 
+                          CommentSerializer, EmailSerializer,
+                          CategorySerializer, TitleSerializer, 
+                          GenreSerializer, TitleCreateSerializer)
+
+@api_view(['POST'])
+def auth_user(request):
+    serializer = EmailSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    email = serializer.data.get('email')
+    username = email.rsplit('@')
 
 
 class UserViewSet(viewsets.ModelViewSet):

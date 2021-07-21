@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import UserViewSet
+from .views import UserViewSet, auth_user, get_token
 from .views import CategoriesListAPIView, CategoriesDetailAPIView
 from .views import GenreListAPIView, GenreDetailAPIView
 from .views import TitleListAPIView, TitleDetailAPIView
@@ -13,6 +13,8 @@ router = DefaultRouter()
 router.register('users', UserViewSet, basename='user')
 
 urlpatterns = [
+    path('v1/auth/email/', auth_user),
+    path('v1/auth/token/', get_token),
     path('v1/', include(router.urls)),
     path('v1/categories/', CategoriesListAPIView.as_view(), name='categories_list'),
     path('v1/categories/<slug:slug>/', CategoriesDetailAPIView.as_view(), name='categories_detail'),

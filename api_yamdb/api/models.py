@@ -7,7 +7,7 @@ from django.utils.text import slugify
 
 class CustomUser(AbstractUser):
 
-    class PermissionsRoleChoice(models.TextChoices):
+    class RoleChoice(models.TextChoices):
         USER = 'user', _('user')
         MODERATOR = 'moderator', _('moderator')
         ADMIN = 'admin', _('admin')
@@ -16,8 +16,8 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     role = models.CharField(
         max_length=50,
-        choices=PermissionsRoleChoice.choices,
-        default=PermissionsRoleChoice.USER
+        choices=RoleChoice.choices,
+        default=RoleChoice.USER
     )
 
     USERNAME_FIELD = 'email'

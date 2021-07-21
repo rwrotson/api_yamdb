@@ -10,8 +10,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from .filters import TitleFilterBackend
 from .models import CustomUser, Review, Comment
 from .models import Category, Genre, Title
-from .serializers import UserSerializer, ReviewSerializer, ReviewCreateSerializer 
-from .serializers import CommentSerializer, CommentCreateSerializer
+from .serializers import UserSerializer, ReviewSerializer 
+from .serializers import CommentSerializer
 from .serializers import CategorySerializer, TitleSerializer, GenreSerializer, TitleCreateSerializer
 
 
@@ -85,33 +85,38 @@ class TitleDetailAPIView(RetrieveUpdateDestroyAPIView):
 
 class ReviewListAPIView(ListCreateAPIView):
     #permission_classes = [IsAdminPermission | ReadOnlyPermission]
-    queryset = Review.objects.all()
-    #pagination_class = PageNumberPagination
+    serializer_class = ReviewSerializer
 
-    def get_serializer_class(self):
-        return ReviewCreateSerializer if self.request.method == 'POST' else ReviewSerializer
+    def get_queryset(self):
+        return Review.objects.filter(title=self.kwargs.get('pk'))
+
+    def perform_create(self, serializer):
+        serializer.save(title=self.kwargs.get('pk'), author=self.request.user['id'])
 
 
 class ReviewDetailAPIView(RetrieveUpdateDestroyAPIView):
     #permission_classes = [IsAdminPermission | ReadOnlyPermission]
     queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
-    def get_serializer_class(self):
-        return ReviewCreateSerializer if self.request.method in ['PATCH', 'PUT'] else ReviewSerializer
+    def get_object(self):
+        return get_object_or_404(Review, title=self.kwargs.get('pk'), id=self.kwargs.get('rpk'))
 
 
 class CommentListAPIView(ListCreateAPIView):
     #permission_classes = [IsAdminPermission | ReadOnlyPermission]
-    queryset = Comment.objects.all()
-    #pagination_class = PageNumberPagination
+    serializer_class = CommentSerializer
 
-    def get_serializer_class(self):
-        return CommentCreateSerializer if self.request.method == 'POST' else CommentSerializer
+    def get_queryset(self):
+        return Comment.objects.filter(review=self.kwargs.get('rpk'))
+
+    def perform_create(self, serializer):
+        serializer.save(title=self.kwargs.get('pk'), review=self.kwargs.get('rpk'), author=self.request.user['id'])
 
 
 class CommentDetailAPIView(RetrieveUpdateDestroyAPIView):
     #permission_classes = [IsAdminPermission | ReadOnlyPermission]
-    queryset = Comment.objects.all()
-
-    def get_serializer_class(self):
-        return ReviewCreateSerializer if self.request.method in ['PATCH', 'PUT'] else CommentSerializer
+    serializer_class = CommentSerializer
+    
+    def get_queryset(self):
+        return Comment.objects.filter(review=self.kwargs.get('rpk'), id=self.kwargs.get('cpk'))

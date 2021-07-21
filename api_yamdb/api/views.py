@@ -2,6 +2,8 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, DestroyAPIView
@@ -89,9 +91,14 @@ class ReviewListAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         return Review.objects.filter(title=self.kwargs.get('pk'))
+        """
+        title = Title.objects.get(id=self.kwargs.get('pk'))
+        return title.reviews.all()
+        """
 
     def perform_create(self, serializer):
-        title = Title.objects.get(id=self.kwargs.get('pk'))
+        title = get_object_or_404(Title, id=self.kwargs.get('pk'))
+        #title = Title.objects.get(id=self.kwargs.get('pk'))
         serializer.save(title=title, author=self.request.user)
 
 
@@ -110,9 +117,18 @@ class CommentListAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         return Comment.objects.filter(review=self.kwargs.get('rpk'))
+        """
+        try:
+            title = Title.objects.get(id=self.kwargs.get('pk'))
+            review = Review.objects.get(title=title, id=self.kwargs.get('rpk'))
+            return review.comments.all()
+        except Review.DoesNotExist:
+            raise NotFound
+        """
 
     def perform_create(self, serializer):
-        review = Review.objects.get(id=self.kwargs.get('rpk'))
+        review = get_object_or_404(Review, id=self.kwargs.get('rpk'))
+        #review = Review.objects.get(id=self.kwargs.get('rpk'))
         serializer.save(review=review, author=self.request.user)
 
 
@@ -121,4 +137,4 @@ class CommentDetailAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     
     def get_queryset(self):
-        return Comment.objects.filter(review=self.kwargs.get('rpk'), id=self.kwargs.get('cpk'))
+        return get_object_or_404(Comment, review=self.kwargs.get('rpk'), id=self.kwargs.get('cpk'))

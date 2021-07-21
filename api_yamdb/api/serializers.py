@@ -61,9 +61,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = self.context['request'].user
-        title = data['title']
+        title = self.context['view'].kwargs.get('pk')
         if self.context['request'].method == 'POST':
-            if Review.objects.get(title=title, author=user).exists():
+            if Review.objects.filter(title=title, author=user).exists():
                 raise ValidationError('You have already left your review!')
         return data
 

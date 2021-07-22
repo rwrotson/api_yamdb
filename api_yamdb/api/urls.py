@@ -5,12 +5,15 @@ from .views import UserViewSet, auth_user, get_token
 from .views import CategoriesListAPIView, CategoriesDetailAPIView
 from .views import GenreListAPIView, GenreDetailAPIView
 from .views import TitleListAPIView, TitleDetailAPIView
-from .views import ReviewListAPIView, ReviewDetailAPIView
-from .views import CommentListAPIView, CommentDetailAPIView
+from .views import ReviewViewSet, CommentViewSet
 
 router = DefaultRouter()
+REVIEW_PATH = r'titles/(?P<title_id>\d+)/reviews'
+COMMENT_PATH = r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments'
 
 router.register('users', UserViewSet, basename='user')
+router.register(REVIEW_PATH, ReviewViewSet, basename='reviews')
+router.register(COMMENT_PATH, CommentViewSet, basename='comments')
 
 urlpatterns = [
     path('v1/auth/email/', auth_user),
@@ -28,12 +31,4 @@ urlpatterns = [
          TitleListAPIView.as_view(), name='title_list'),
     path('v1/titles/<int:pk>/',
          TitleDetailAPIView.as_view(), name='title_detail'),
-    path('v1/titles/<int:pk>/reviews/',
-         ReviewListAPIView.as_view(), name='review_list'),
-    path('v1/titles/<int:pk>/reviews/<int:rpk>/',
-         ReviewDetailAPIView.as_view(), name='review_detail'),
-    path('v1/titles/<int:pk>/reviews/<int:rpk>/comments/',
-         CommentListAPIView.as_view(), name='comment_list'),
-    path('v1/titles/<int:pk>/reviews/<int:rpk>/comments/<int:cpk>/',
-         CommentDetailAPIView.as_view(), name='comment_detail'),
 ]

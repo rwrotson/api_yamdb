@@ -15,8 +15,8 @@ from .permissions import (IsAdminPermission,
                           ReadOnlyPermission)
 from api_yamdb.settings import DEFAULT_FROM_EMAIL
 from .filters import TitleFilterBackend
-from .models import (CustomUser, Review, Title, Category,
-                     Genre, Category, Comment)
+from .models import (CustomUser, Review, Title,
+                     Category, Genre, Category)
 from .serializers import (UserSerializer, ReviewSerializer,
                           CommentSerializer, EmailSerializer,
                           CategorySerializer, TitleSerializer,
@@ -133,51 +133,33 @@ class TitleDetailAPIView(RetrieveUpdateDestroyAPIView):
                 in ['PATCH', 'PUT'] else TitleSerializer)
 
 
-class ReviewListAPIView(ListCreateAPIView):
-    permission_classes = [IsAuthenticated | ReadOnlyPermission]
+class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = (IsModeratorPermission,
+                          IsAuthenticated | ReadOnlyPermission)
 
     def get_queryset(self):
-        return Review.objects.filter(title=self.kwargs.get('pk'))
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        return title.reviews.all()
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get('pk'))
-        serializer.save(title=title, author=self.request.user)
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
 
 
-class ReviewDetailAPIView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminPermission | IsModeratorPermission]
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-
-    def get_object(self):
-        return get_object_or_404(
-            Review,
-            title=self.kwargs.get('pk'),
-            id=self.kwargs.get('rpk')
-        )
-
-
-class CommentListAPIView(ListCreateAPIView):
-    permission_classes = [IsAuthenticated | ReadOnlyPermission]
+class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = (IsModeratorPermission,
+                          IsAuthenticated | ReadOnlyPermission)
 
     def get_queryset(self):
-        return Comment.objects.filter(review=self.kwargs.get('rpk'))
+        review = get_object_or_404(
+            Review, id=self.kwargs.get('review_id'),
+            title=self.kwargs.get('title_id'))
+        return review.comments.all()
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, id=self.kwargs.get('rpk'))
-        serializer.save(review=review, author=self.request.user)
-
-
-class CommentDetailAPIView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminPermission | IsModeratorPermission]
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-    def get_object(self):
-        return get_object_or_404(
-            Comment,
-            review=self.kwargs.get('rpk'),
-            id=self.kwargs.get('cpk')
-        )
+        review = get_object_or_404(
+            Review, id=self.kwargs.get('review_id'),
+            title=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, review=review)

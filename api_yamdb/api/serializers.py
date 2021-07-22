@@ -7,14 +7,14 @@ from .models import Category, Title, Genre
 
 class EmailSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
-    
+
     class Meta:
         fields = ['email']
         model = CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         fields = ['first_name', 'last_name', 'username', 'bio',
                   'email', 'role']
@@ -41,12 +41,17 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description', 'category', 'genre', 'rating')
+        fields = ('id', 'name', 'year', 'description',
+                  'category', 'genre', 'rating')
 
 
 class TitleCreateSerializer(TitleSerializer):
-    category = serializers.SlugRelatedField(slug_field='slug', queryset=Category.objects.all())
-    genre = serializers.SlugRelatedField(slug_field='slug', queryset=Genre.objects.all(), many=True)
+    category = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Category.objects.all()
+    )
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Genre.objects.all(), many=True
+    )
 
 
 class ReviewSerializer(serializers.ModelSerializer):

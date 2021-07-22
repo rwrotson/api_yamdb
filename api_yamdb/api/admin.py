@@ -4,13 +4,13 @@ from .models import CustomUser, Review, Comment
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'first_name', 'last_name', 'username', 'bio',
-                  'email', 'role')
+    list_display = ('pk', 'first_name', 'last_name',
+                    'username', 'bio', 'email', 'role')
     empty_value_display = '-пусто-'
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('text', 'author', 'score', 'pub_date') #title_id
+    list_display = ('title_id', 'text', 'author', 'score', 'pub_date')
     empty_value_display = '-пусто-'
 
 

@@ -56,7 +56,10 @@ class Genre(CategoryAbstract):
 
 
 class Title(models.Model):
-    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.PROTECT, related_name='titles')
+    category = models.ForeignKey(
+        Category, verbose_name='Категория',
+        on_delete=models.PROTECT, related_name='titles'
+    )
     name = models.CharField('Название', max_length=150)
     description = models.TextField('Описание', blank=True, null=True)
     year = models.PositiveSmallIntegerField('Год')

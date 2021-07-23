@@ -1,3 +1,4 @@
+import datetime as dt
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -21,7 +22,7 @@ class CustomUser(AbstractUser):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ('username', )
 
     def __str__(self):
         return self.email
@@ -34,25 +35,27 @@ class CategoryAbstract(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.name
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super(CategoryAbstract, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
 
 
 class Category(CategoryAbstract):
     class Meta:
         verbose_name = 'Категорию'
         verbose_name_plural = 'Категории'
+        ordering = ('pk', )
 
 
 class Genre(CategoryAbstract):
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+        ordering = ('pk', )
 
 
 class Title(models.Model):
@@ -62,12 +65,15 @@ class Title(models.Model):
     )
     name = models.CharField('Название', max_length=150)
     description = models.TextField('Описание', blank=True, null=True)
-    year = models.PositiveSmallIntegerField('Год')
+    year = models.PositiveSmallIntegerField(
+        'Год', validators=(MaxValueValidator(dt.datetime.today().year), )
+    )
     genre = models.ManyToManyField(Genre, verbose_name='Жанры')
 
     class Meta:
         verbose_name = 'Объект'
         verbose_name_plural = 'Объекты'
+        ordering = ('pk', )
 
     def __str__(self):
         return f'{self.name} - {self.category.name}'
@@ -86,12 +92,15 @@ class Review(models.Model):
     author = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='reviews'
     )
-    score = models.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+    score = models.PositiveSmallIntegerField(
+        validators=(MinValueValidator(1), MaxValueValidator(10))
     )
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True
     )
+
+    class Meta:
+        ordering = ('pk', )
 
     def __str__(self):
         return self.text[:15]
@@ -108,6 +117,9 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True
     )
+
+    class Meta:
+        ordering = ('pk', )
 
     def __str__(self):
         return self.text[:15]

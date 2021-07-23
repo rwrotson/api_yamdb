@@ -9,15 +9,15 @@ class EmailSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
 
     class Meta:
-        fields = ['email']
+        fields = ('email',)
         model = CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ['first_name', 'last_name', 'username', 'bio',
-                  'email', 'role']
+        fields = ('first_name', 'last_name', 'username', 'bio',
+                  'email', 'role')
         model = CustomUser
 
 

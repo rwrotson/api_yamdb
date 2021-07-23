@@ -27,6 +27,14 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
 
+    @property
+    def is_admin(self):
+        return self.role == CustomUser.RoleChoice.ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == CustomUser.RoleChoice.MODERATOR
+
 
 class CategoryAbstract(models.Model):
     name = models.CharField('Название', max_length=100)

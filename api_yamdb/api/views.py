@@ -66,7 +66,7 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = 'username'
     serializer_class = UserSerializer
 
-    @action(detail=False, permission_classes=[IsAuthenticated],
+    @action(detail=False, permission_classes=(IsAuthenticated, ),
             url_path='me', url_name='me')
     def profile_get(self, request):
         serializer = self.get_serializer(request.user)
@@ -74,7 +74,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @profile_get.mapping.patch
     @action(methods=['PATCH'], detail=False,
-            permission_classes=[IsAuthenticated],
+            permission_classes=(IsAuthenticated, ),
             url_path='me', url_name='me')
     def profile_patch(self, request):
         serializer = self.get_serializer(request.user, data=request.data,
@@ -85,8 +85,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class CommonListAPIView(ListCreateAPIView):
-    permission_classes = [IsAdminPermission | ReadOnlyPermission]
-    filter_backends = [SearchFilter]
+    permission_classes = (IsAdminPermission | ReadOnlyPermission, )
+    filter_backends = (SearchFilter,)
     search_fields = ('name',)
 
 
@@ -96,10 +96,10 @@ class CategoriesListAPIView(CommonListAPIView):
 
 
 class CategoriesDetailAPIView(DestroyAPIView):
-    permission_classes = [IsAdminPermission]
+    permission_classes = (IsAdminPermission, )
 
     def get_object(self):
-        return get_object_or_404(Category, slug=self.kwargs['slug'])
+        return get_object_or_404(Category, slug=self.kwargs.get('slug'))
 
 
 class GenreListAPIView(CommonListAPIView):
@@ -108,16 +108,16 @@ class GenreListAPIView(CommonListAPIView):
 
 
 class GenreDetailAPIView(DestroyAPIView):
-    permission_classes = [IsAdminPermission]
+    permission_classes = (IsAdminPermission, )
 
     def get_object(self):
         return get_object_or_404(Genre, slug=self.kwargs['slug'])
 
 
 class TitleListAPIView(ListCreateAPIView):
-    permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    permission_classes = (IsAdminPermission | ReadOnlyPermission, )
     queryset = Title.objects.all()
-    filter_backends = [TitleFilterBackend]
+    filter_backends = (TitleFilterBackend,)
 
     def get_serializer_class(self):
         return (TitleCreateSerializer if self.request.method == 'POST'
@@ -125,7 +125,7 @@ class TitleListAPIView(ListCreateAPIView):
 
 
 class TitleDetailAPIView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminPermission | ReadOnlyPermission]
+    permission_classes = (IsAdminPermission | ReadOnlyPermission, )
     queryset = Title.objects.all()
 
     def get_serializer_class(self):

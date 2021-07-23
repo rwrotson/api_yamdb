@@ -23,7 +23,7 @@ class CustomUser(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = 'username',
-    
+
     class Meta:
         ordering = ('id',)
 

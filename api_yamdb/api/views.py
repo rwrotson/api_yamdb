@@ -111,7 +111,7 @@ class GenreDetailAPIView(DestroyAPIView):
     permission_classes = (IsAdminPermission, )
 
     def get_object(self):
-        return get_object_or_404(Genre, slug=self.kwargs['slug'])
+        return get_object_or_404(Genre, slug=self.kwargs.get('slug'))
 
 
 class TitleListAPIView(ListCreateAPIView):

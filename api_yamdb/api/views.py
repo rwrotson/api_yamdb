@@ -29,10 +29,10 @@ def auth_user(request):
     serializer.is_valid(raise_exception=True)
     email = serializer.data.get('email')
     username = email.rsplit('@')[0]
-    user = CustomUser.objects.get_or_create(email=email, username=username)
-    confirmation_code = default_token_generator.make_token(user[0])
+    user, _ = CustomUser.objects.get_or_create(email=email, username=username)
+    confirmation_code = default_token_generator.make_token(user)
     send_mail(
-        'Привет! Лови код!',
+        'Your code!',
         confirmation_code,
         DEFAULT_FROM_EMAIL,
         [email],
@@ -42,7 +42,7 @@ def auth_user(request):
 
 @api_view(['POST'])
 def get_token(request):
-    serializer = KodSerializer(data=request.data)
+    serializer = CodeSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     email = serializer.data.get('email')
     confirmation_code = serializer.data.get('confirmation_code')
@@ -55,14 +55,14 @@ def get_token(request):
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class KodSerializer(serializers.Serializer):
+class CodeSerializer(serializers.Serializer):
     email = serializers.EmailField()
     confirmation_code = serializers.CharField()
 
 
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminPermission]
-    queryset = CustomUser.objects.all().order_by('id')
+    queryset = CustomUser.objects.all()
     lookup_field = 'username'
     serializer_class = UserSerializer
 

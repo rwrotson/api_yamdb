@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, serializers
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view
@@ -20,7 +20,8 @@ from .models import (CustomUser, Review, Title,
 from .serializers import (UserSerializer, ReviewSerializer,
                           CommentSerializer, EmailSerializer,
                           CategorySerializer, TitleSerializer,
-                          GenreSerializer, TitleCreateSerializer)
+                          GenreSerializer, TitleCreateSerializer,
+                          CodeSerializer)
 
 
 @api_view(['POST'])
@@ -53,11 +54,6 @@ def get_token(request):
             {'token': str(token)},
             status=status.HTTP_200_OK)
     return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class CodeSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    confirmation_code = serializers.CharField()
 
 
 class UserViewSet(viewsets.ModelViewSet):

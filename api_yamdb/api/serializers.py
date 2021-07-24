@@ -13,6 +13,11 @@ class EmailSerializer(serializers.ModelSerializer):
         model = CustomUser
 
 
+class CodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    confirmation_code = serializers.CharField()
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
